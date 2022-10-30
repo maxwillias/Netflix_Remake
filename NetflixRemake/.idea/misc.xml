@@ -4,9 +4,13 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="app/src/main/res/drawable/placeholder_bg.xml" value="0.1385" />
+        <entry key="app/src/main/res/drawable/shadows.xml" value="0.1385" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/activity_movie.xml" value="0.1" />
         <entry key="app/src/main/res/layout/category_item.xml" value="0.33" />
         <entry key="app/src/main/res/layout/move_item.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/move_item_similar .xml" value="0.19322916666666667" />
+        <entry key="app/src/main/res/layout/movie_item_similar.xml" value="0.19322916666666667" />
       </map>
     </option>
   </component>

@@ -4,6 +4,8 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import com.example.netflixremake.model.Movie
+import com.example.netflixremake.model.MovieDetail
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.BufferedInputStream
 import java.io.ByteArrayOutputStream
@@ -13,14 +15,14 @@ import java.net.URL
 import java.util.concurrent.Executors
 import javax.net.ssl.HttpsURLConnection
 
-class MovieTask(private val callback: Callback, private val name: String) {
+class MovieDetailTask(private val callback: Callback, private val similars: List<Movie>) {
 
     private val handler = Handler(Looper.getMainLooper())
     private val executor = Executors.newSingleThreadExecutor()
 
     interface Callback {
         fun onPreExecute()
-        fun onResult(movies: List<Movie>, name: String)
+        fun onResult(movieDetail: MovieDetail)
         fun onFailure(message: String)
     }
 
@@ -58,11 +60,11 @@ class MovieTask(private val callback: Callback, private val name: String) {
                 val jsonAsString = toString(buffer)
 
                 //JSON está preparado para ser convertido em um DATA CLASS!!
-                val movies = toMovie(jsonAsString)
+                val movieDetail = toMovieDetail(jsonAsString)
 
                 handler.post{
                     //aqui roda dentro da UI-Thread
-                    callback.onResult(movies, this.name)
+                    callback.onResult(movieDetail)
                 }
 
             }catch (e: IOException){
@@ -79,20 +81,15 @@ class MovieTask(private val callback: Callback, private val name: String) {
         }
     }
 
-    private fun toMovie(jsonAsString: String) : List<Movie> {
-        val movies = mutableListOf<Movie>()
+    private fun toMovieDetail(jsonAsString: String) : MovieDetail {
+        val jsonMovie = JSONObject(jsonAsString)
+        val id = jsonMovie.getString("imdbID")
+        val title = jsonMovie.getString("Title")
+        val poster = jsonMovie.getString("Poster")
+        val plot = jsonMovie.getString("Plot")
+        val actors = jsonMovie.getString("Actors")
 
-        val jsonRoot = JSONObject(jsonAsString)
-        val jsonMovies = jsonRoot.getJSONArray("Search")
-        for (i in 0 until jsonMovies.length()){
-            val jsonMovie = jsonMovies.getJSONObject(i)
-            val id = jsonMovie.getString("imdbID")
-            val title = jsonMovie.getString("Title")
-            val poster = jsonMovie.getString("Poster")
-            movies.add(Movie( id, title, poster))
-        }
-
-        return movies
+        return MovieDetail(Movie(id, title, poster, plot, actors), similars)
     }
 
     private fun toString(stream: InputStream) : String {
